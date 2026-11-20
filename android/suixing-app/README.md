@@ -31,6 +31,17 @@ adb -s emulator-5554 install -r -t app/build/outputs/apk/androidTest/debug/app-d
 adb -s emulator-5554 shell am instrument -w -r -e class org.suixing.app.TrackStoreTest org.suixing.app.test/android.test.InstrumentationTestRunner
 ```
 
-有完整 Gradle 测试平台依赖时，也可执行 `.\Build.cmd connectedDebugAndroidTest`。设备测试通过 Android 原生 SQLite 检查字段往返、按序读取、正常结束、进程中断恢复与空会话。单元测试涵盖滤波、里程、地图状态及定位心跳。API 34 模拟器的注入定位只验证软件链路，真实手机的户外 GPS、续航和有效 AK 底图仍需现场验收。
+设备测试通过 Android 原生 SQLite 检查字段往返、按序读取、正常结束、进程中断恢复与空会话。单元测试涵盖滤波、里程、地图状态、定位心跳和长轨迹回放采样。示意图自动适配全程，百度底图就绪时才开放相机跟随操作。
+
+要复验立即停止、启动期间 GPS 关闭、导出阻塞期间的逐点写入，以及示意图控件状态，可在专用 API 34 模拟器上运行完整设备套件。先安装上面的应用和测试 APK，确保应用空闲、系统位置开关已开启。在模拟器测试安装上运行以下命令，验证后恢复原权限。GPS 用例使用 Android 测试提供程序，并在结束时移除。
+
+```powershell
+adb -s emulator-5554 shell pm grant org.suixing.app android.permission.ACCESS_COARSE_LOCATION
+adb -s emulator-5554 shell pm grant org.suixing.app android.permission.ACCESS_FINE_LOCATION
+adb -s emulator-5554 shell appops set org.suixing.app android:mock_location allow
+adb -s emulator-5554 shell am instrument -w org.suixing.app.test/android.test.InstrumentationTestRunner
+```
+
+API 34 模拟器的注入定位只验证软件链路，真实手机的户外 GPS、续航和有效 AK 底图仍需现场验收。
 
 车辆读数尚未接入，预留事件字段与时间域见[只读风险事件约定](docs/read-only-risk-events.md)。

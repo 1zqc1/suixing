@@ -117,7 +117,7 @@ final class TrackStore extends SQLiteOpenHelper {
         return Collections.unmodifiableList(result);
     }
 
-    void writeJsonl(Session session, Writer out) throws IOException {
+    static void writeJsonl(Session session, List<TrackPoint> points, Writer out) throws IOException {
         JsonWriter header = new JsonWriter(out);
         header.beginObject().name("schema").value("suixing.track.v1").name("type").value("session")
                 .name("sessionId").value(session.id).name("source").value(session.source)
@@ -125,20 +125,17 @@ final class TrackStore extends SQLiteOpenHelper {
                 .name("startedEpochMillis").value(session.started).name("endedEpochMillis").value(session.ended)
                 .name("pointCount").value(session.count).endObject();
         out.write('\n');
-        try (Cursor row = pointRows(session.id)) {
-            while (row.moveToNext()) {
-                TrackPoint p = point(row);
-                JsonWriter json = new JsonWriter(out);
-                json.beginObject().name("type").value("point").name("sessionId").value(session.id)
-                        .name("sequence").value(p.sequence).name("segment").value(p.segment)
-                        .name("epochMillis").value(p.fix.epochMillis)
-                        .name("elapsedMillis").value(p.fix.elapsedMillis)
-                        .name("coordinateSystem").value("WGS84")
-                        .name("latitude").value(p.fix.latitude).name("longitude").value(p.fix.longitude)
-                        .name("accuracyMeters").value(p.fix.accuracyMeters)
-                        .name("source").value(p.fix.source).endObject();
-                out.write('\n');
-            }
+        for (TrackPoint p : points) {
+            JsonWriter json = new JsonWriter(out);
+            json.beginObject().name("type").value("point").name("sessionId").value(session.id)
+                    .name("sequence").value(p.sequence).name("segment").value(p.segment)
+                    .name("epochMillis").value(p.fix.epochMillis)
+                    .name("elapsedMillis").value(p.fix.elapsedMillis)
+                    .name("coordinateSystem").value("WGS84")
+                    .name("latitude").value(p.fix.latitude).name("longitude").value(p.fix.longitude)
+                    .name("accuracyMeters").value(p.fix.accuracyMeters)
+                    .name("source").value(p.fix.source).endObject();
+            out.write('\n');
         }
     }
 }

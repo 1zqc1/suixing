@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,7 @@ public final class TrackApp extends Application {
     static final String DEMO = "DEMO", PHONE = "PHONE_GPS";
     final Handler main = new Handler(Looper.getMainLooper());
     private final ScheduledThreadPoolExecutor io = new ScheduledThreadPoolExecutor(1);
+    private final ExecutorService documentIo = Executors.newSingleThreadExecutor();
     private TrackStore store;
     private SharedPreferences preferences;
     private final List<double[]> demo = new ArrayList<>();
@@ -249,8 +252,20 @@ public final class TrackApp extends Application {
     static final class Saved {
         final List<TrackPoint> points;
         final double[] distances;
+        private final List<TrackPoint> previewPoints;
         Saved(List<TrackPoint> points) {
             this.points = points;
+            if (points.size() <= 1500) {
+                previewPoints = points;
+            } else {
+                ArrayList<TrackPoint> preview = new ArrayList<>(points);
+                while (preview.size() > 1500) {
+                    int previousSize = preview.size();
+                    thinPreview(preview);
+                    if (preview.size() == previousSize) break; // Every remaining point is a segment endpoint.
+                }
+                previewPoints = Collections.unmodifiableList(preview);
+            }
             distances = new double[points.size()];
             for (int i = 1; i < points.size(); i++) {
                 TrackPoint prev = points.get(i - 1), cur = points.get(i);
@@ -258,6 +273,18 @@ public final class TrackApp extends Application {
                 if (prev.segment == cur.segment) distances[i] += TrackMetrics.haversineMeters(
                         prev.fix.latitude, prev.fix.longitude, cur.fix.latitude, cur.fix.longitude);
             }
+        }
+
+        List<TrackPoint> preview(int shown) {
+            if (shown == 0) return Collections.emptyList();
+            if (shown == points.size()) return previewPoints;
+            TrackPoint current = points.get(shown - 1);
+            int index = Collections.binarySearch(previewPoints, current,
+                    (left, right) -> Long.compare(left.sequence, right.sequence));
+            if (index >= 0) return previewPoints.subList(0, index + 1);
+            List<TrackPoint> prefix = new ArrayList<>(previewPoints.subList(0, -index - 1));
+            prefix.add(current);
+            return prefix;
         }
     }
     void load(long id, Result<Saved> callback) {
@@ -269,17 +296,31 @@ public final class TrackApp extends Application {
         });
     }
 
+    interface DocumentOutput { OutputStream open() throws IOException; }
+
     void export(long id, Uri target) {
-        io.execute(() -> {
+        export(id, () -> getContentResolver().openOutputStream(target, "wt"));
+    }
+
+    void export(long id, DocumentOutput destination) {
+        documentIo.execute(() -> {
             String result = "导出失败，请检查文档位置和可用空间";
             try {
                 TrackStore.Session selected = null;
-                for (TrackStore.Session session : store.history()) if (session.id == id) { selected = session; break; }
-                if (selected == null) throw new IOException("找不到记录");
-                try (OutputStream stream = getContentResolver().openOutputStream(target, "wt")) {
+                List<TrackPoint> points;
+                // Completed sessions are immutable. Release all SQLite cursors and connections
+                // before the external provider can block on open, write, flush, or close.
+                try (TrackStore reader = new TrackStore(this, "tracks.db")) {
+                    for (TrackStore.Session session : reader.history()) {
+                        if (session.id == id) { selected = session; break; }
+                    }
+                    if (selected == null) throw new IOException("找不到记录");
+                    points = reader.points(id);
+                }
+                try (OutputStream stream = destination.open()) {
                     if (stream == null) throw new IOException("无法打开文档");
                     try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8))) {
-                        store.writeJsonl(selected, writer);
+                        TrackStore.writeJsonl(selected, points, writer);
                     }
                 }
                 result = "已导出 JSONL · " + selected.count + " 个点";

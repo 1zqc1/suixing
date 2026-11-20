@@ -86,6 +86,10 @@ public final class MapPanel extends FrameLayout {
         return statusText;
     }
 
+    public boolean supportsCameraFollow() {
+        return !destroyed && baiduMap != null && schematic.getVisibility() == GONE;
+    }
+
     public void onResume() {
         if (baiduMap != null) {
             baiduMap.onResume();

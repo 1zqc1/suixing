@@ -223,7 +223,8 @@ public final class MainActivity extends Activity {
                 ? View.VISIBLE : View.GONE);
         caption(record, active ? (app.finishing ? "正在保存…" : "结束记录") : "开始记录");
         caption(play, replaying ? "取消回放" : "回放轨迹");
-        caption(center, follow ? "位置跟随 · 已开启" : "位置跟随 · 已关闭");
+        boolean camera = map.supportsCameraFollow();
+        caption(center, camera ? (follow ? "位置跟随 · 已开启" : "位置跟随 · 已关闭") : "轨迹示意 · 自动显示全程");
         String source = active ? app.active.source : (phone ? TrackApp.PHONE : TrackApp.DEMO);
         String modeText = viewing ? (replaying ? "历史回放" : "历史轨迹") + " · " + sourceName(selected.source)
                 : sourceName(source) + (active ? " · 记录中" : " · 实时视图");
@@ -234,10 +235,11 @@ public final class MainActivity extends Activity {
         int n = viewing ? Math.min(shown, points.size()) : points.size();
         TrackPoint last = n == 0 ? null : points.get(n - 1);
         if (points != lastTrack || n != lastShown) {
-            map.setTrack(n == points.size() ? points : points.subList(0, n), last, follow);
+            List<TrackPoint> display = viewing && saved != null ? saved.preview(n) : points;
+            map.setTrack(display, last, follow);
             lastTrack = points; lastShown = n;
         }
-        center.setEnabled(last != null);
+        center.setEnabled(camera && last != null);
         int count = viewing ? n : showLive ? app.frame.count : 0;
         double distance = viewing ? (n > 0 ? saved.distances[n - 1] : 0) : showLive ? app.frame.distance : 0;
         long duration = viewing ? (n > 0 ? last.fix.elapsedMillis - points.get(0).fix.elapsedMillis : 0)
@@ -330,7 +332,9 @@ public final class MainActivity extends Activity {
         if (run == null) return;
         try {
             Intent service = new Intent(this, PhoneService.class).putExtra(PhoneService.TOKEN, run.startElapsed);
-            if (Build.VERSION.SDK_INT >= 26) startForegroundService(service); else startService(service);
+            // Only a resumed Activity starts this private service. It promotes in onStartCommand
+            // after rechecking eligibility; cancellation before that callback is also legal.
+            startService(service);
         } catch (RuntimeException e) { app.stop("前台定位服务启动失败", true); }
     }
     private void notificationPermission() {
