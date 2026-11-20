@@ -38,20 +38,29 @@ import java.util.Objects;
 final class BaiduTrackMap {
     private static final String TAG = "BaiduTrackMap";
     private static final long LOAD_TIMEOUT_MILLIS = 12_000;
-    private static final MapReadiness.Authorization AUTHORIZATION = new MapReadiness.Authorization();
-    private static ProcessAuthListener sdkAuthListener;
-    private static boolean sdkInitialized;
+    private static final MapSdkSession SDK_SESSION = new MapSdkSession();
 
-    /** Registered for the SDK's process lifetime while consent remains active. */
+    /** Retains the result of the process request even when every panel has been closed. */
     private static final class ProcessAuthListener implements RequestAuthResultListener {
         private final Handler main = new Handler(Looper.getMainLooper());
+        private final MapReadiness.Authorization.Observer result;
+        private boolean canceled;
+
+        ProcessAuthListener(MapReadiness.Authorization.Observer result) {
+            this.result = result;
+        }
 
         @Override public void onAuthResult(int status, String message) {
             main.post(() -> {
-                if (sdkAuthListener == this) {
-                    AUTHORIZATION.update(status);
+                if (!canceled) {
+                    result.onResult(status);
                 }
             });
+        }
+
+        void cancel() {
+            canceled = true;
+            release(() -> SDKInitializer.removeAuthResultListener(this));
         }
     }
 
@@ -85,12 +94,14 @@ final class BaiduTrackMap {
         this.parent = parent;
         this.onLoaded = onLoaded;
         this.onFailure = onFailure;
-        readiness = new MapReadiness(AUTHORIZATION, this::mapReady, this::fail);
+        readiness = new MapReadiness(SDK_SESSION.authorization(), this::mapReady, this::fail);
         loadTimeout = readiness::timeout;
     }
 
     void initialize(String ak) {
-        initializeSdk(parent.getContext().getApplicationContext(), ak);
+        Context app = parent.getContext().getApplicationContext();
+        SDK_SESSION.enable(agreed -> SDKInitializer.setAgreePrivacy(app, agreed),
+                result -> initializeSdk(app, ak, result));
         readiness.observeAuthorization();
         if (closed) {
             // A cached failure already selected the schematic.
@@ -110,39 +121,23 @@ final class BaiduTrackMap {
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
     }
 
-    private static void initializeSdk(Context app, String ak) {
-        if (sdkAuthListener != null) {
-            return;
-        }
-        SDKInitializer.setAgreePrivacy(app, true);
+    private static void initializeSdk(Context app, String ak,
+                                      MapReadiness.Authorization.Observer result) {
         SDKInitializer.setHttpsEnable(true);
         SDKInitializer.setApiKey(ak);
         SDKInitializer.setCoordType(CoordType.BD09LL);
-        ProcessAuthListener listener = new ProcessAuthListener();
+        ProcessAuthListener listener = new ProcessAuthListener(result);
         SDKInitializer.addAuthResultListener(listener);
-        sdkAuthListener = listener;
         try {
             SDKInitializer.initialize(app);
-            sdkInitialized = true;
         } catch (RuntimeException | LinkageError failure) {
-            removeSdkAuthListener();
+            listener.cancel();
             throw failure;
         }
     }
 
     static void revokePrivacy(Context app) {
-        if (sdkInitialized) {
-            removeSdkAuthListener();
-            release(() -> SDKInitializer.setAgreePrivacy(app, false));
-        }
-    }
-
-    private static void removeSdkAuthListener() {
-        ProcessAuthListener listener = sdkAuthListener;
-        sdkAuthListener = null;
-        if (listener != null) {
-            release(() -> SDKInitializer.removeAuthResultListener(listener));
-        }
+        release(() -> SDK_SESSION.withdraw(agreed -> SDKInitializer.setAgreePrivacy(app, agreed)));
     }
 
     void setTrack(List<List<TrackPoint>> segments, TrackPoint current, boolean follow) {

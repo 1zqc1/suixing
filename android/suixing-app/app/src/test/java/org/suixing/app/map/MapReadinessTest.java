@@ -41,6 +41,61 @@ public class MapReadinessTest {
         assertEquals(Collections.singletonList("百度地图授权失败（错误码 230）"), second);
     }
 
+    @Test public void successDuringWithdrawalIsAvailableWhenConsentReturns() {
+        MapSdkSession session = new MapSdkSession();
+        List<Boolean> privacy = new ArrayList<>();
+        List<MapReadiness.Authorization.Observer> sdkCallbacks = new ArrayList<>();
+        List<String> first = new ArrayList<>();
+        session.enable(privacy::add, sdkCallbacks::add);
+        MapReadiness panel = observe(session.authorization(), first);
+        panel.engineLoaded();
+        panel.renderData(true);
+
+        panel.close();
+        session.withdraw(privacy::add);
+        sdkCallbacks.get(0).onResult(0);
+        assertTrue(first.isEmpty());
+
+        session.enable(privacy::add, sdkCallbacks::add);
+        List<String> second = new ArrayList<>();
+        MapReadiness replacement = observe(session.authorization(), second);
+        replacement.engineLoaded();
+        assertTrue(second.isEmpty());
+        replacement.renderData(true);
+
+        assertEquals(Arrays.asList(true, false, true), privacy);
+        assertEquals(1, sdkCallbacks.size());
+        assertEquals(Collections.singletonList("ready"), second);
+    }
+
+    @Test public void rejectionDuringWithdrawalIsAvailableWhenConsentReturns() {
+        MapSdkSession session = new MapSdkSession();
+        List<Boolean> privacy = new ArrayList<>();
+        List<MapReadiness.Authorization.Observer> sdkCallbacks = new ArrayList<>();
+        session.enable(privacy::add, sdkCallbacks::add);
+        List<String> first = new ArrayList<>();
+        observe(session.authorization(), first).close();
+        session.withdraw(privacy::add);
+        sdkCallbacks.get(0).onResult(230);
+
+        session.enable(privacy::add, sdkCallbacks::add);
+        List<String> second = new ArrayList<>();
+        observe(session.authorization(), second);
+
+        assertTrue(first.isEmpty());
+        assertEquals(1, sdkCallbacks.size());
+        assertEquals(Collections.singletonList("百度地图授权失败（错误码 230）"), second);
+    }
+
+    @Test public void withdrawalBeforeSdkStartupDoesNotApplySdkPrivacy() {
+        MapSdkSession session = new MapSdkSession();
+        List<Boolean> privacy = new ArrayList<>();
+
+        session.withdraw(privacy::add);
+
+        assertTrue(privacy.isEmpty());
+    }
+
     @Test public void engineLoadAndSuccessfulAuthorizationStillNeedUsableData() {
         MapReadiness.Authorization authorization = new MapReadiness.Authorization();
         List<String> events = new ArrayList<>();
