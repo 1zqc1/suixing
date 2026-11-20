@@ -1,0 +1,31 @@
+plugins { id 'com.android.application' }
+
+def localSettings = new Properties()
+def localFile = rootProject.file('local.properties')
+if (localFile.exists()) { localFile.withInputStream { localSettings.load(it) } }
+def mapAk = (localSettings.getProperty('baidu.map.ak') ?: System.getenv('BAIDU_MAP_AK') ?: '').trim()
+
+android {
+    namespace 'org.suixing.app'
+    compileSdk 35
+    buildToolsVersion '35.0.0'
+    defaultConfig {
+        applicationId 'org.suixing.app'
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0'
+        buildConfigField 'String', 'BAIDU_MAP_AK', '"' + mapAk.replace('\\', '\\\\').replace('"', '\\"') + '"'
+        manifestPlaceholders = [BAIDU_MAP_AK: mapAk]
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+        ndk { abiFilters 'arm64-v8a', 'x86_64' }
+    }
+    buildFeatures { buildConfig true }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    buildTypes { release { minifyEnabled false } }
+}
+
+dependencies {
+    implementation 'com.baidu.lbsyun:BaiduMapSDK_Map:9.0.0'
+    testImplementation 'junit:junit:4.13.2'
+}
