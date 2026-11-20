@@ -38,18 +38,29 @@ import java.util.Objects;
 final class BaiduTrackMap {
     private static final String TAG = "BaiduTrackMap";
     private static final long LOAD_TIMEOUT_MILLIS = 12_000;
+    private static final MapReadiness.Authorization AUTHORIZATION = new MapReadiness.Authorization();
+    private static ProcessAuthListener sdkAuthListener;
     private static boolean sdkInitialized;
 
-    interface FailureListener {
-        void onFailure(String reason);
+    /** Registered for the SDK's process lifetime while consent remains active. */
+    private static final class ProcessAuthListener implements RequestAuthResultListener {
+        private final Handler main = new Handler(Looper.getMainLooper());
+
+        @Override public void onAuthResult(int status, String message) {
+            main.post(() -> {
+                if (sdkAuthListener == this) {
+                    AUTHORIZATION.update(status);
+                }
+            });
+        }
     }
 
     private final FrameLayout parent;
     private final Runnable onLoaded;
-    private final FailureListener onFailure;
+    private final MapReadiness.FailureListener onFailure;
     private final Handler main = new Handler(Looper.getMainLooper());
-    private final RequestAuthResultListener authListener = this::handleAuthResult;
-    private final Runnable loadTimeout = () -> fail("百度地图加载超时");
+    private final MapReadiness readiness;
+    private final Runnable loadTimeout;
     private final List<Overlay> route = new ArrayList<>();
 
     private MapView view;
@@ -68,26 +79,23 @@ final class BaiduTrackMap {
     private LatLng cameraTarget;
     private boolean follow;
     private boolean previouslyFollowing;
-    private boolean authListenerRegistered;
-    private boolean loaded;
     private boolean closed;
 
-    BaiduTrackMap(FrameLayout parent, Runnable onLoaded, FailureListener onFailure) {
+    BaiduTrackMap(FrameLayout parent, Runnable onLoaded, MapReadiness.FailureListener onFailure) {
         this.parent = parent;
         this.onLoaded = onLoaded;
         this.onFailure = onFailure;
+        readiness = new MapReadiness(AUTHORIZATION, this::mapReady, this::fail);
+        loadTimeout = readiness::timeout;
     }
 
     void initialize(String ak) {
-        Context app = parent.getContext().getApplicationContext();
-        SDKInitializer.setAgreePrivacy(app, true);
-        SDKInitializer.setHttpsEnable(true);
-        SDKInitializer.setApiKey(ak);
-        SDKInitializer.setCoordType(CoordType.BD09LL);
-        SDKInitializer.addAuthResultListener(authListener);
-        authListenerRegistered = true;
-        SDKInitializer.initialize(app);
-        sdkInitialized = true;
+        initializeSdk(parent.getContext().getApplicationContext(), ak);
+        readiness.observeAuthorization();
+        if (closed) {
+            // A cached failure already selected the schematic.
+            return;
+        }
 
         view = new MapView(parent.getContext());
         map = Objects.requireNonNull(view.getMap());
@@ -95,14 +103,45 @@ final class BaiduTrackMap {
         startIcon = markerIcon(MapPanel.START_COLOR, 9);
         currentIcon = markerIcon(MapPanel.CURRENT_COLOR, 6);
         singlePointIcon = markerIcon(MapPanel.ROUTE_COLOR, 3);
-        map.setOnMapLoadedCallback(() -> main.post(this::mapLoaded));
+        map.setOnMapLoadedCallback(() -> main.post(readiness::engineLoaded));
+        map.setOnMapRenderValidDataListener((valid, code, message) ->
+                main.post(() -> readiness.renderData(valid)));
         parent.addView(view, 0, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
     }
 
+    private static void initializeSdk(Context app, String ak) {
+        if (sdkAuthListener != null) {
+            return;
+        }
+        SDKInitializer.setAgreePrivacy(app, true);
+        SDKInitializer.setHttpsEnable(true);
+        SDKInitializer.setApiKey(ak);
+        SDKInitializer.setCoordType(CoordType.BD09LL);
+        ProcessAuthListener listener = new ProcessAuthListener();
+        SDKInitializer.addAuthResultListener(listener);
+        sdkAuthListener = listener;
+        try {
+            SDKInitializer.initialize(app);
+            sdkInitialized = true;
+        } catch (RuntimeException | LinkageError failure) {
+            removeSdkAuthListener();
+            throw failure;
+        }
+    }
+
     static void revokePrivacy(Context app) {
         if (sdkInitialized) {
+            removeSdkAuthListener();
             release(() -> SDKInitializer.setAgreePrivacy(app, false));
+        }
+    }
+
+    private static void removeSdkAuthListener() {
+        ProcessAuthListener listener = sdkAuthListener;
+        sdkAuthListener = null;
+        if (listener != null) {
+            release(() -> SDKInitializer.removeAuthResultListener(listener));
         }
     }
 
@@ -110,7 +149,7 @@ final class BaiduTrackMap {
         this.segments = segments;
         this.current = current;
         this.follow = follow;
-        if (loaded) {
+        if (readiness.isReady()) {
             render();
         }
     }
@@ -118,7 +157,7 @@ final class BaiduTrackMap {
     void onResume() {
         try {
             view.onResume();
-            if (!loaded) {
+            if (!readiness.isReady()) {
                 main.removeCallbacks(loadTimeout);
                 main.postDelayed(loadTimeout, LOAD_TIMEOUT_MILLIS);
             }
@@ -138,17 +177,19 @@ final class BaiduTrackMap {
 
     void close() {
         closed = true;
+        readiness.close();
         main.removeCallbacksAndMessages(null);
-        if (authListenerRegistered) {
-            release(() -> SDKInitializer.removeAuthResultListener(authListener));
-            authListenerRegistered = false;
-        }
         if (map != null) {
-            release(() -> map.setOnMapLoadedCallback(null));
             release(map::clear);
         }
         if (view != null) {
             release(view::onDestroy);
+        }
+        if (map != null) {
+            release(() -> map.setOnMapLoadedCallback(null));
+            release(() -> map.setOnMapRenderValidDataListener(null));
+        }
+        if (view != null) {
             release(() -> parent.removeView(view));
         }
         recycle(startIcon);
@@ -156,17 +197,7 @@ final class BaiduTrackMap {
         recycle(singlePointIcon);
     }
 
-    private void handleAuthResult(int status, String message) {
-        if (status != 0) {
-            main.post(() -> fail("百度地图授权失败（错误码 " + status + "）"));
-        }
-    }
-
-    private void mapLoaded() {
-        if (closed || loaded) {
-            return;
-        }
-        loaded = true;
+    private void mapReady() {
         main.removeCallbacks(loadTimeout);
         render();
         if (!closed) {
