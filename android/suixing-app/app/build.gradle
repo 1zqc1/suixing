@@ -27,5 +27,6 @@ android {
 
 dependencies {
     implementation 'com.baidu.lbsyun:BaiduMapSDK_Map:9.0.0'
+    implementation 'com.baidu.lbsyun:BaiduMapSDK_Util:9.0.0'
     testImplementation 'junit:junit:4.13.2'
 }
