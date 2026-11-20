@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1",
+  "source": "mock",
+  "scenario": "d6_offline",
+  "sample_time_utc": "2026-11-20T00:00:00Z",
+  "system_state": "FAULT_SAFE",
+  "motion_permitted": false,
+  "estop_active": false,
+  "brake_requested": true,
+  "brake_feedback": "UNKNOWN",
+  "sensors": {
+    "d6": "OFFLINE",
+    "stereo": "ONLINE"
+  },
+  "reason_code": "D6_OFFLINE"
+}

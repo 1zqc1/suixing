@@ -16,6 +16,10 @@
 - **本地历史**列出会话日期、来源、点数和完成状态。异常退出后重新打开应用，未结束的会话会标记为中断，已提交的点和空会话均可查询。选择会话后可逐步回放、取消回放或返回实时视图。回放速度用于快速预览。
 - **导出 JSONL**通过系统文档选择器指定位置，无需存储权限。首行是 `suixing.track.v1` 会话元数据，后续每行是按序号排列的轨迹点。字段包括 `sessionId`、`sequence`、`segment`、`epochMillis`、`elapsedMillis`、`latitude`、`longitude`、`accuracyMeters`、`source` 与 `coordinateSystem=WGS84`。系统明确标记模拟定位时，GPS 点来源为 `PHONE_GPS_MOCK`。模拟器底层注入可能未带该标记，设备验收需单独记录测试环境。
 
+## M1 车况样例
+
+在首页点“车况样例”，可在待机、D6 离线和制动锁存间切换。页面使用应用内置的三份独立 `mock` JSON，显示运动许可、急停、制动请求、制动执行回读和传感器状态。样本时间是合成 UTC。页面无需百度 AK 或位置权限。手机 GPS 前台记录可在查看样例期间继续，正在运行的模拟轨迹会按离开轨迹页的现有规则结束并保存。[数据版本、原样文件校验和与回归命令](docs/m1-vehicle-status.md)
+
 ## 配置百度地图
 
 在百度地图开放平台创建 Android SDK 类型应用，绑定包名 `org.suixing.app` 和实际 APK 的签名证书 SHA1，并开通所需地图服务。可以用 `apksigner verify --print-certs app/build/outputs/apk/debug/app-debug.apk` 读取签名。Debug 与 Release 证书可能不同。[百度官方 AK 配置指南](https://lbs.baidu.com/docs/guide?title=android-guide/create-project/ak)
@@ -44,4 +48,4 @@ adb -s emulator-5554 shell am instrument -w org.suixing.app.test/android.test.In
 
 API 34 模拟器的注入定位只验证软件链路，真实手机的户外 GPS、续航和有效 AK 底图仍需现场验收。
 
-车辆读数尚未接入，预留事件字段与时间域见[只读风险事件约定](docs/read-only-risk-events.md)。
+实车读数尚未接入。[预留的只读风险事件字段与时间域](docs/read-only-risk-events.md)

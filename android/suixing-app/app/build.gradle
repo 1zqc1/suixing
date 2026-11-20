@@ -31,5 +31,6 @@ dependencies {
             "${android.sdkDirectory}/platforms/android-35/optional/android.test.base.jar")
     implementation 'com.baidu.lbsyun:BaiduMapSDK_Map:9.0.0'
     implementation 'com.baidu.lbsyun:BaiduMapSDK_Util:9.0.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
     testImplementation 'junit:junit:4.13.2'
 }

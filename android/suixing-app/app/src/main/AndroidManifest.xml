@@ -17,6 +17,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".vehicle.VehicleStatusActivity" android:exported="false" />
         <service android:name=".PhoneService" android:exported="false" android:foregroundServiceType="location" />
     </application>
 </manifest>

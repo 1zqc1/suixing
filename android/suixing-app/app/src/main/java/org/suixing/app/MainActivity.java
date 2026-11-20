@@ -26,6 +26,7 @@ import android.view.WindowInsets;
 import android.widget.*;
 import org.suixing.app.core.TrackPoint;
 import org.suixing.app.map.MapPanel;
+import org.suixing.app.vehicle.VehicleStatusActivity;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -114,6 +115,7 @@ public final class MainActivity extends Activity {
         header.addView(title, weight());
         privacy = button("隐私设置", false, v -> consentDialog());
         header.addView(privacy); page.addView(header);
+        add(page, button("车况样例", false, v -> startActivity(new Intent(this, VehicleStatusActivity.class))), 0);
         RadioGroup sources = new RadioGroup(this);
         sources.setOrientation(LinearLayout.HORIZONTAL);
         demoRadio = radio("模拟轨迹"); phoneRadio = radio("手机 GPS");
