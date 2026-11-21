@@ -99,8 +99,12 @@ public class RecorderConcurrencyTest extends InstrumentationTestCase {
         onMain(() -> app.consent = false);
         screen = device.startActivitySync(new Intent(context, MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        device.waitForIdleSync();
         onMain(() -> {
+            click("模拟轨迹");
             click("开始记录");
+            assertNotNull("Expected a demo session to start", app.active);
+            assertEquals(TrackApp.DEMO, app.active.source);
             testRuns.add(app.active);
         });
         awaitMain(() -> app.frame.count >= 2);
