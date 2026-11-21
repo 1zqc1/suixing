@@ -41,23 +41,15 @@ public final class VehicleStatusActivity extends Activity {
         LinearLayout page = column();
         page.setBackgroundColor(BACKGROUND);
         page.setOnApplyWindowInsetsListener(this::applySystemInsets);
-        page.addView(header());
-
-        LinearLayout banner = column();
-        banner.setPadding(dp(12), dp(8), dp(12), dp(8));
-        banner.setBackground(surface(BANNER));
-        banner.addView(label("合成只读样例 · 未连接实车", 16, TEAL, true));
-        banner.addView(label("来源 " + VehicleStatus.SOURCE + " · 架构版本 " + VehicleStatus.SCHEMA_VERSION,
-                14, INK, false));
-        banner.addView(label("数据版本 " + VehicleStatus.DATA_VERSION, 14, INK, false));
-        LinearLayout.LayoutParams bannerParams = new LinearLayout.LayoutParams(-1, -2);
-        bannerParams.setMargins(dp(16), 0, dp(16), dp(8));
-        page.addView(banner, bannerParams);
+        boolean shortWindow = getResources().getConfiguration().screenHeightDp < 300;
+        if (!shortWindow) page.addView(header());
+        page.addView(provenanceBanner(shortWindow));
 
         ScrollView scroll = new ScrollView(this);
         scroll.setFillViewport(true);
         LinearLayout body = column();
         body.setPadding(dp(16), 0, dp(16), dp(16));
+        if (shortWindow) body.addView(header());
         body.addView(sceneSelector());
         details = column();
         details.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
@@ -72,6 +64,30 @@ public final class VehicleStatusActivity extends Activity {
     @Override protected void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);
         out.putString(SELECTED_SCENARIO, selected.id);
+    }
+
+    private LinearLayout provenanceBanner(boolean shortWindow) {
+        LinearLayout banner = column();
+        int margin = dp(shortWindow ? 8 : 16);
+        int padding = dp(shortWindow ? 6 : 8);
+        banner.setPadding(dp(shortWindow ? 8 : 12), padding, dp(shortWindow ? 8 : 12), padding);
+        banner.setBackground(surface(BANNER));
+
+        String schema = "格式版本 " + VehicleStatus.SCHEMA_VERSION;
+        if (shortWindow) {
+            banner.addView(label(VehicleStatus.SOURCE + " · 未连接实车", 14, TEAL, true));
+            banner.addView(label(schema, 14, INK, false));
+            banner.addView(label(VehicleStatus.DATA_VERSION, 14, INK, false));
+        } else {
+            banner.addView(label("合成只读样例 · 未连接实车", 16, TEAL, true));
+            banner.addView(label("来源 " + VehicleStatus.SOURCE + " · " + schema, 14, INK, false));
+            banner.addView(label("数据版本 " + VehicleStatus.DATA_VERSION, 14, INK, false));
+        }
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        params.setMargins(margin, shortWindow ? dp(4) : 0, margin, shortWindow ? dp(4) : dp(8));
+        banner.setLayoutParams(params);
+        return banner;
     }
 
     private LinearLayout header() {

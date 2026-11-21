@@ -66,7 +66,11 @@ public final class PhoneService extends Service implements LocationListener {
                 startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
             } else startForeground(1, notification);
             manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this, Looper.getMainLooper());
-        } catch (RuntimeException e) { app.stop("无法启动前台 GPS，请检查定位权限与系统设置", true); }
+        } catch (SecurityException e) {
+            app.stop("定位权限已撤回或系统不允许前台定位", true);
+        } catch (RuntimeException e) {
+            app.stop("无法启动前台 GPS，请检查定位权限与系统设置", true);
+        }
         return START_NOT_STICKY;
     }
     private Notification notification() {

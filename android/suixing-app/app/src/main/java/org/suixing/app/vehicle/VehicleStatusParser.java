@@ -21,6 +21,7 @@ import org.suixing.app.vehicle.VehicleStatus.SystemState;
 
 final class VehicleStatusParser {
     private static final Pattern UTC = Pattern.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z");
+    private static final int MAX_IGNORED_CONTAINER_DEPTH = 32;
 
     private VehicleStatusParser() {}
 
@@ -50,7 +51,7 @@ final class VehicleStatusParser {
                 case "brake_feedback" -> feedback = readEnum(json, BrakeFeedback.class);
                 case "sensors" -> {
                     if (json.peek() != JsonToken.BEGIN_OBJECT) {
-                        json.skipValue();
+                        discardValue(json);
                         break;
                     }
                     Set<String> seenSensors = new HashSet<>();
@@ -59,13 +60,13 @@ final class VehicleStatusParser {
                         switch (nextUniqueName(json, seenSensors)) {
                             case "d6" -> d6 = readEnum(json, SensorHealth.class);
                             case "stereo" -> stereo = readEnum(json, SensorHealth.class);
-                            default -> json.skipValue();
+                            default -> discardValue(json);
                         }
                     }
                     json.endObject();
                 }
                 case "reason_code" -> reason = readEnum(json, Reason.class);
-                default -> json.skipValue();
+                default -> discardValue(json);
             }
         }
         json.endObject();
@@ -86,14 +87,43 @@ final class VehicleStatusParser {
 
     private static String readString(JsonReader json) throws IOException {
         if (json.peek() == JsonToken.STRING) return json.nextString();
-        json.skipValue();
+        discardValue(json);
         return null;
     }
 
     private static Boolean readBoolean(JsonReader json) throws IOException {
         if (json.peek() == JsonToken.BOOLEAN) return json.nextBoolean();
-        json.skipValue();
+        discardValue(json);
         return null;
+    }
+
+    private static void discardValue(JsonReader json) throws IOException {
+        // Gson 2.11's skipValue omits strict control-character checks on quoted names and strings.
+        int depth = 0;
+        do {
+            JsonToken token = json.peek();
+            switch (token) {
+                case BEGIN_ARRAY, BEGIN_OBJECT -> {
+                    if (depth == MAX_IGNORED_CONTAINER_DEPTH) throw new IOException("Vehicle status nesting is too deep");
+                    if (token == JsonToken.BEGIN_ARRAY) json.beginArray();
+                    else json.beginObject();
+                    depth++;
+                }
+                case END_ARRAY -> {
+                    json.endArray();
+                    depth--;
+                }
+                case END_OBJECT -> {
+                    json.endObject();
+                    depth--;
+                }
+                case NAME -> json.nextName();
+                case STRING, NUMBER -> json.nextString();
+                case BOOLEAN -> json.nextBoolean();
+                case NULL -> json.nextNull();
+                default -> throw new IOException("Incomplete vehicle status value");
+            }
+        } while (depth > 0);
     }
 
     private static <E extends Enum<E>> E readEnum(JsonReader json, Class<E> type) throws IOException {
