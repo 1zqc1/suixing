@@ -1,6 +1,7 @@
 package org.suixing.app.map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -94,6 +95,22 @@ public class MapReadinessTest {
         session.withdraw(privacy::add);
 
         assertTrue(privacy.isEmpty());
+    }
+
+    @Test public void withdrawalAndRetryWorkAfterFailedSdkStartup() {
+        MapSdkSession session = new MapSdkSession();
+        List<Boolean> privacy = new ArrayList<>();
+        List<MapReadiness.Authorization.Observer> callbacks = new ArrayList<>();
+        MapSdkSession.Startup failingStartup = ignored -> { throw new IllegalStateException("SDK startup failed"); };
+
+        assertThrows(IllegalStateException.class, () -> session.enable(privacy::add, failingStartup));
+        session.withdraw(privacy::add);
+        assertEquals(Arrays.asList(true, false), privacy);
+
+        assertThrows(IllegalStateException.class, () -> session.enable(privacy::add, failingStartup));
+        session.enable(privacy::add, callbacks::add);
+        assertEquals(Arrays.asList(true, false, true), privacy);
+        assertEquals(1, callbacks.size());
     }
 
     @Test public void engineLoadAndSuccessfulAuthorizationStillNeedUsableData() {

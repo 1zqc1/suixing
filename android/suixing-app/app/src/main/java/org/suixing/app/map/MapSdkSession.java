@@ -19,21 +19,20 @@ final class MapSdkSession {
     }
 
     void enable(PrivacyMode privacy, Startup startup) {
-        if (consentApplied) {
-            return;
+        if (!consentApplied) {
+            privacy.setAgreed(true);
+            consentApplied = true;
         }
-        privacy.setAgreed(true);
         if (!initialized) {
             startup.initialize(authorization::update);
             initialized = true;
         }
-        consentApplied = true;
     }
 
     void withdraw(PrivacyMode privacy) {
         if (consentApplied) {
-            consentApplied = false;
             privacy.setAgreed(false);
+            consentApplied = false;
         }
     }
 }
