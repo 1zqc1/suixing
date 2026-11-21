@@ -1,6 +1,7 @@
 package org.suixing.app;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -23,6 +24,8 @@ import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowInsets;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 import android.widget.*;
 import org.suixing.app.core.TrackPoint;
 import org.suixing.app.map.MapPanel;
@@ -48,6 +51,7 @@ public final class MainActivity extends Activity {
     private TrackStore.Session selected;
     private TrackApp.Saved saved;
     private boolean replaying;
+    private OnBackInvokedCallback historyBackCallback;
     private int shown;
     private Object lastTrack;
     private int lastShown = -1;
@@ -212,6 +216,7 @@ public final class MainActivity extends Activity {
         boolean active = app.active != null;
         if (active && selected != null) clearHistory();
         boolean viewing = selected != null;
+        updateHistoryBackCallback(viewing);
         boolean enabled = app.ready && !app.savingConsent;
         demoRadio.setEnabled(enabled && !active); phoneRadio.setEnabled(enabled && !active);
         privacy.setEnabled(enabled);
@@ -478,13 +483,36 @@ public final class MainActivity extends Activity {
         out.putLong("history", selected == null ? restoreId : selected.id);
         out.putLong("export", exportId); out.putBoolean("requestingLocation", requestingLocation);
     }
+    private boolean handleHistoryBack() {
+        if (replaying) {
+            cancelReplay();
+        } else if (selected != null) {
+            clearHistory(); app.message = "准备记录"; render();
+        } else {
+            return false;
+        }
+        return true;
+    }
+    private void updateHistoryBackCallback(boolean viewing) {
+        if (Build.VERSION.SDK_INT < 33) return;
+        if (viewing && historyBackCallback == null) {
+            historyBackCallback = () -> handleHistoryBack();
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_DEFAULT, historyBackCallback);
+        } else if (!viewing && historyBackCallback != null) {
+            getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(historyBackCallback);
+            historyBackCallback = null;
+        }
+    }
+    // Android 12L and earlier use this override. API 33+ uses the registered back callback.
+    @SuppressLint("GestureBackNavigation")
+    @SuppressWarnings("deprecation")
     @Override public void onBackPressed() {
-        if (replaying) cancelReplay();
-        else if (selected != null) { clearHistory(); app.message = "准备记录"; render(); }
-        else super.onBackPressed();
+        if (!handleHistoryBack()) super.onBackPressed();
     }
     @Override protected void onDestroy() {
         generation++;
+        updateHistoryBackCallback(false);
         if (map != null) map.onDestroy();
         super.onDestroy();
     }

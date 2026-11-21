@@ -46,7 +46,7 @@ final class MapReadiness {
     private final Authorization.Observer observer = this::authorizationResult;
     private boolean authorized;
     private boolean engineLoaded;
-    private boolean validData;
+    private boolean renderFailed;
     private boolean ready;
     private boolean closed;
 
@@ -62,11 +62,13 @@ final class MapReadiness {
 
     void engineLoaded() {
         engineLoaded = true;
+        // onMapLoaded confirms a usable basemap even when the SDK sends no separate success event.
+        renderFailed = false;
         checkReady();
     }
 
     void renderData(boolean valid) {
-        validData = valid;
+        renderFailed = !valid;
         checkReady();
     }
 
@@ -95,7 +97,7 @@ final class MapReadiness {
     }
 
     private void checkReady() {
-        if (!closed && !ready && authorized && engineLoaded && validData) {
+        if (!closed && !ready && authorized && engineLoaded && !renderFailed) {
             ready = true;
             onReady.run();
         }

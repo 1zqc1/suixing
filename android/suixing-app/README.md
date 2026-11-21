@@ -4,7 +4,7 @@
 
 ## 运行
 
-1. 在本目录配置 Android SDK 35、Build Tools 35.0.0、JDK 21，使用工程自带的 Gradle 8.11.1。Windows 下 `Build.cmd` 优先使用已安装的 `D:\Android\java\jdk-21.0.13.1+2`。应用使用 Java 17 语法、AGP 8.9.2，最低 Android 6.0（API 23），目标 API 35，支持 arm64-v8a 和 x86_64。
+1. 在本目录配置 Android 16 SDK（API 36）、Build Tools 36.0.0、JDK 21，使用工程自带的 Gradle 8.11.1。Windows 下 `Build.cmd` 优先使用已安装的 `D:\Android\java\jdk-21.0.13.1+2`。应用使用 Java 17 语法、AGP 8.9.2，最低 Android 6.0（API 23），目标 API 36，支持 arm64-v8a 和 x86_64。
 2. 设置 `ANDROID_HOME` 或在本地 `local.properties` 写入 `sdk.dir=D:/Android/SDK`。在本目录运行 `.\Build.cmd testDebugUnitTest assembleDebug`，缓存就绪后可追加 `--offline`。
 3. 通过 `adb install -r app/build/outputs/apk/debug/app-debug.apk` 安装并打开“随行”。在隐私弹窗选择同意，或选择“仅使用模拟和历史”。
 
@@ -24,7 +24,7 @@
 
 在百度地图开放平台创建 Android SDK 类型应用，绑定包名 `org.suixing.app` 和实际 APK 的签名证书 SHA1，并开通所需地图服务。可以用 `apksigner verify --print-certs app/build/outputs/apk/debug/app-debug.apk` 读取签名。Debug 与 Release 证书可能不同。[百度官方 AK 配置指南](https://lbs.baidu.com/docs/guide?title=android-guide/create-project/ak)
 
-在已忽略的 `local.properties` 中设置 `baidu.map.ak=你的AK`，或设置环境变量 `BAIDU_MAP_AK`，再重新构建安装。同意隐私设置且配置了 AK 后才初始化百度地图。数据库和 JSONL 保留 WGS84，百度底图渲染使用官方坐标转换器转为 BD09LL。鉴权、原生库或底图数据加载失败会显示相应提示并退回轨迹示意图。
+在 Git 已忽略的 `local.properties` 中另起一行设置 `baidu.map.ak=你的AK`。SDK 路径保存在 `sdk.dir` 对应的行。也可设置环境变量 `BAIDU_MAP_AK`，再重新构建安装。同意隐私设置且配置了 AK 后才初始化百度地图。数据库和 JSONL 保留 WGS84，百度底图渲染使用官方坐标转换器转为 BD09LL。鉴权、原生库或底图数据加载失败会显示相应提示并退回轨迹示意图。
 
 ## 回归
 

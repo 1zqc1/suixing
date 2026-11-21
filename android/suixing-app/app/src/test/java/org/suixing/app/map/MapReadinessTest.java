@@ -60,9 +60,8 @@ public class MapReadinessTest {
         session.enable(privacy::add, sdkCallbacks::add);
         List<String> second = new ArrayList<>();
         MapReadiness replacement = observe(session.authorization(), second);
-        replacement.engineLoaded();
         assertTrue(second.isEmpty());
-        replacement.renderData(true);
+        replacement.engineLoaded();
 
         assertEquals(Arrays.asList(true, false, true), privacy);
         assertEquals(1, sdkCallbacks.size());
@@ -113,16 +112,15 @@ public class MapReadinessTest {
         assertEquals(1, callbacks.size());
     }
 
-    @Test public void engineLoadAndSuccessfulAuthorizationStillNeedUsableData() {
+    @Test public void aMapLoadedEventCanRecoverFromAnEarlierRenderError() {
         MapReadiness.Authorization authorization = new MapReadiness.Authorization();
         List<String> events = new ArrayList<>();
         MapReadiness panel = observe(authorization, events);
-        panel.engineLoaded();
         authorization.update(0);
         panel.renderData(false);
         assertTrue(events.isEmpty());
 
-        panel.renderData(true);
+        panel.engineLoaded();
         panel.renderData(true);
         panel.timeout();
 
@@ -156,7 +154,7 @@ public class MapReadinessTest {
         assertEquals(Collections.singletonList("百度地图授权结果等待超时"), events);
     }
 
-    @Test public void authorizedEngineWithNoValidDataReportsLoadTimeout() {
+    @Test public void successfulLoadDoesNotWaitForRenderDataCallback() {
         MapReadiness.Authorization authorization = new MapReadiness.Authorization();
         authorization.update(0);
         List<String> events = new ArrayList<>();
@@ -164,7 +162,17 @@ public class MapReadinessTest {
         panel.engineLoaded();
 
         panel.timeout();
-        panel.renderData(true);
+        assertEquals(Collections.singletonList("ready"), events);
+    }
+
+    @Test public void missingMapLoadStillTimesOutAfterAuthorization() {
+        MapReadiness.Authorization authorization = new MapReadiness.Authorization();
+        authorization.update(0);
+        List<String> events = new ArrayList<>();
+        MapReadiness panel = observe(authorization, events);
+        panel.renderData(false);
+        panel.timeout();
+        panel.engineLoaded();
 
         assertEquals(Collections.singletonList("百度地图底图加载超时"), events);
     }

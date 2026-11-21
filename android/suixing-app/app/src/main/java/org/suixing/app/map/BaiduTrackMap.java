@@ -17,12 +17,12 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
-import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
+import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.map.WidthType;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
@@ -72,7 +72,7 @@ final class BaiduTrackMap {
     private final Runnable loadTimeout;
     private final List<Overlay> route = new ArrayList<>();
 
-    private MapView view;
+    private TextureMapView view;
     private BaiduMap map;
     private CoordinateConverter converter;
     private BitmapDescriptor startIcon;
@@ -108,7 +108,7 @@ final class BaiduTrackMap {
             return;
         }
 
-        view = new MapView(parent.getContext());
+        view = new TextureMapView(parent.getContext());
         map = Objects.requireNonNull(view.getMap());
         converter = new CoordinateConverter().from(CoordinateConverter.CoordType.GPS);
         startIcon = markerIcon(MapPanel.START_COLOR, 9);
