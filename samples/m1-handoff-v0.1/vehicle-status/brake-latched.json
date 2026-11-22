@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.1",
+  "source": "mock",
+  "scenario": "brake_latched",
+  "sample_time_utc": "2026-11-20T00:00:00Z",
+  "system_state": "BRAKE_LATCHED",
+  "motion_permitted": false,
+  "estop_active": false,
+  "brake_requested": true,
+  "brake_feedback": "APPLIED",
+  "sensors": {
+    "d6": "ONLINE",
+    "stereo": "ONLINE"
+  },
+  "reason_code": "HAZARD"
+}

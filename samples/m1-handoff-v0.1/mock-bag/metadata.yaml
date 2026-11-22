@@ -1,0 +1,56 @@
+rosbag2_bagfile_information:
+  version: 5
+  storage_identifier: sqlite3
+  duration:
+    nanoseconds: 130000000
+  starting_time:
+    nanoseconds_since_epoch: 1700000000000000000
+  message_count: 11
+  topics_with_message_count:
+    - topic_metadata:
+        name: /stereo/right/camera_info
+        type: sensor_msgs/msg/CameraInfo
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 2
+    - topic_metadata:
+        name: /stereo/left/camera_info
+        type: sensor_msgs/msg/CameraInfo
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 2
+    - topic_metadata:
+        name: /stereo/right/image_raw
+        type: sensor_msgs/msg/Image
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 2
+    - topic_metadata:
+        name: /stereo/left/image_raw
+        type: sensor_msgs/msg/Image
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 2
+    - topic_metadata:
+        name: /d6/scan
+        type: sensor_msgs/msg/LaserScan
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 2
+    - topic_metadata:
+        name: /tf_static
+        type: tf2_msgs/msg/TFMessage
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 1
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - mock-bag_0.db3
+  files:
+    - path: mock-bag_0.db3
+      starting_time:
+        nanoseconds_since_epoch: 1700000000000000000
+      duration:
+        nanoseconds: 130000000
+      message_count: 11
