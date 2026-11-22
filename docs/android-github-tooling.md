@@ -22,7 +22,7 @@
 - Codex 配置修改前已在用户 `.codex` 私有目录内备份；其他 MCP 配置保留。
 - 实测：JSON-RPC 初始化成功，返回 server `mobile-mcp 1.0.18`、35 项上游工具；发现在线 `AndroidReady_API_34`；成功读取 Android 界面元素及前台 `check.readiness.MainActivity`。
 - 原始验证记录：`D:\Phytium\work\tooling-audit\mobile-mcp-verification.json`。它只证明 MCP 与本机模拟器通信，不代表随行业务 APP 已通过验收。
-- 当前对话的工具目录未热加载此服务；新对话或重新加载 Codex 后可直接调用。已通过独立 stdio 客户端完成实际验证。
+- 已通过独立 stdio 客户端完成验证。修改本机配置后，在新会话中以 `codex mcp get suixing_mobile --json` 和设备列表核对服务。
 
 配置字段参照 [Codex 官方 MCP 文档](https://developers.openai.com/codex/mcp/)。
 
@@ -42,6 +42,10 @@ Windows 实测/上游兼容记录：[mobile-mcp issue538](https://github.com/mob
 安装目录为用户 `.codex\skills` 对应名称的文件夹。下一轮对话可自动发现；当前实现可以读取已安装文件作为指引。
 
 适用边界：首版已获确认使用 Java 原生界面、纯 Java 单元测试和设备回归；不因 Skills 中的通用 Compose/Hilt/截图框架建议扩大技术范围。仅安装与本项目相关的四项，没有批量导入无关 Skills。
+
+## 仓库内排障 Skill
+
+项目内的 [debugging-suixing-android](../.agents/skills/debugging-suixing-android/SKILL.md) 提供 Windows 工具链、真机调试、百度底图、系统返回和 GPS 回放的排查入口与验证方式。需要权限审查、测试设计或应用 ANR 排查时，继续参照上面的专项 Skills。
 
 ## 复核方法
 
