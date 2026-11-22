@@ -5,8 +5,10 @@
 ## 运行
 
 1. 在本目录配置 Android 16 SDK（API 36）、Build Tools 36.0.0、JDK 21，使用工程自带的 Gradle 8.11.1。Windows 下 `Build.cmd` 优先使用已安装的 `D:\Android\java\jdk-21.0.13.1+2`。应用使用 Java 17 语法、AGP 8.9.2，最低 Android 6.0（API 23），目标 API 36，支持 arm64-v8a 和 x86_64。
-2. 设置 `ANDROID_HOME` 或在本地 `local.properties` 写入 `sdk.dir=D:/Android/SDK`。在本目录运行 `.\Build.cmd testDebugUnitTest assembleDebug`，缓存就绪后可追加 `--offline`。
-3. 通过 `adb install -r app/build/outputs/apk/debug/app-debug.apk` 安装并打开“随行”。在隐私弹窗选择同意，或选择“仅使用模拟和历史”。
+2. 设置 `ANDROID_HOME` 或在应用工程根目录的 `local.properties` 写入 `sdk.dir=D\:/Android/SDK`。在本目录运行 `.\Build.cmd testDebugUnitTest assembleDebug`，缓存就绪后可追加 `--offline`。
+3. 用 `adb devices -l` 确认已授权的设备。通过 `adb install -r app/build/outputs/apk/debug/app-debug.apk` 安装并打开“随行”。在隐私弹窗选择同意，或选择“仅使用模拟和历史”。
+
+团队环境见[开发环境与安装](../../docs/开发环境与安装.md)。
 
 ## 记录与回放
 
@@ -46,6 +48,6 @@ adb -s emulator-5554 shell appops set org.suixing.app android:mock_location allo
 adb -s emulator-5554 shell am instrument -w org.suixing.app.test/android.test.InstrumentationTestRunner
 ```
 
-API 34 模拟器的注入定位只验证软件链路，真实手机的户外 GPS、续航和有效 AK 底图仍需现场验收。
+现有 API 36 设备回归记录使用模拟器注入定位。真机已观察到授权后的百度道路底图、断网追加 GPS 点与本地回放。未缓存区域的底图、长时后台和续航仍需复验。[证据与验收范围](../../docs/开发与验收基线.md#android-真机记录观察)
 
 实车读数尚未接入。[预留的只读风险事件字段与时间域](docs/read-only-risk-events.md)

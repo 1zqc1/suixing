@@ -1,5 +1,7 @@
 # 随行 B1/B2 Android 首版设计
 
+> 首版设计记录。当前 Android 16 应用的依赖、运行方式和验收结果见[应用说明](../../../android/suixing-app/README.md)。
+
 用户已确认：按 B1/B2 范围实现，百度 Android AK 稍后配置。代码以 1zqc1/suixing 为准，首轮不接入车辆控制、家属共享或语音固件。
 
 ## 范围与交付

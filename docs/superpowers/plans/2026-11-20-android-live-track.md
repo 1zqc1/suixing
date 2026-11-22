@@ -1,5 +1,7 @@
 # Android B1/B2 Implementation Plan
 
+> 首版实施记录。当前环境与回归入口见[Android 应用说明](../../../android/suixing-app/README.md)。
+
 > **For agentic workers:** use subagent-driven-development for scoped implementation and review. Execute continuously within the user-approved B1/B2 scope.
 
 **Goal:** installable Chinese Android app with real-time/simulated tracks and local replay.
