@@ -3,3 +3,7 @@
 gradlew text eol=lf
 gradlew.bat text eol=crlf
 *.jar binary
+
+# Preserve the exact bytes used by the M1 fixture SHA-256 manifest.
+/samples/m1-handoff-v0.1/** -text
+/docs/rover-v1-20261116/cad-v4-two-drive/*.step binary

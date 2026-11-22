@@ -1,0 +1,38 @@
+{
+  "schema_version": "0.1",
+  "data_origin": "mock",
+  "cases": [
+    {
+      "id": "fresh",
+      "generated_monotonic_ms": 1000,
+      "receive_monotonic_ms": 1020,
+      "summary": {
+        "session_id": "mock-risk-001",
+        "seq": 1,
+        "risk": {"left": "UNKNOWN", "straight": "DANGER", "right": "UNKNOWN"},
+        "ttc_s": [0.8, 1.2],
+        "unknown_region": true,
+        "source_age_ms": 20,
+        "valid_for_ms": 100,
+        "suggested_speed_limit_mps": null
+      },
+      "expected": "ACCEPT_FRESH"
+    },
+    {
+      "id": "expired-at-boundary",
+      "generated_monotonic_ms": 1200,
+      "receive_monotonic_ms": 1300,
+      "summary": {
+        "session_id": "mock-risk-001",
+        "seq": 2,
+        "risk": {"left": "UNKNOWN", "straight": "DANGER", "right": "UNKNOWN"},
+        "ttc_s": [0.8, 1.2],
+        "unknown_region": true,
+        "source_age_ms": 20,
+        "valid_for_ms": 100,
+        "suggested_speed_limit_mps": null
+      },
+      "expected": "REJECT_EXPIRED"
+    }
+  ]
+}

@@ -1,0 +1,817 @@
+{
+  "parts": [
+    {
+      "name": "V4-Chassis-Deck-Envelope",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -136.0,
+        104.0,
+        -221.0,
+        136.0,
+        110.0,
+        221.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -1.9586668320030757e-15,
+        107.0,
+        -1.0925688422267157e-14
+      ]
+    },
+    {
+      "name": "V4-Perimeter-Bumper-Envelope",
+      "color": "#293540",
+      "bounds_mm": [
+        -137.0,
+        110.0,
+        -225.0,
+        137.0,
+        140.0,
+        225.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        1.2610656028137762e-13,
+        125.0,
+        -1.5467263020394077e-13
+      ]
+    },
+    {
+      "name": "V4-Removable-Cover-Envelope",
+      "color": "#E1E8EA",
+      "bounds_mm": [
+        -137.0,
+        140.0,
+        -225.0,
+        137.0,
+        242.0,
+        225.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -2.172482254989719e-14,
+        206.33588624561233,
+        0.31185300698826773
+      ]
+    },
+    {
+      "name": "V4-Battery-Low-Center-Envelope",
+      "color": "#406285",
+      "bounds_mm": [
+        -62.0,
+        110.0,
+        -87.0,
+        62.0,
+        158.0,
+        17.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -1.1073762989209895e-15,
+        134.0,
+        -35.0
+      ]
+    },
+    {
+      "name": "V4-Electronics-Tray-Envelope",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -110.0,
+        158.0,
+        -12.0,
+        -16.0,
+        162.0,
+        107.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -63.00000000000001,
+        160.0,
+        47.5
+      ]
+    },
+    {
+      "name": "V4-CEK8903-Board-Envelope",
+      "color": "#36806B",
+      "bounds_mm": [
+        -109.55,
+        162.0,
+        -12.0,
+        -16.45,
+        195.0,
+        107.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -62.99999999999998,
+        178.49999999999994,
+        47.5
+      ]
+    },
+    {
+      "name": "V4-Two-Channel-Drive-Envelope",
+      "color": "#A45951",
+      "bounds_mm": [
+        67.0,
+        110.0,
+        -79.0,
+        110.0,
+        132.0,
+        11.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        88.5,
+        121.0,
+        -34.0
+      ]
+    },
+    {
+      "name": "V4-Rubber-Drive-Tire-L",
+      "color": "#243039",
+      "bounds_mm": [
+        -175.0,
+        0.0,
+        -180.0,
+        -145.0,
+        180.0,
+        0.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -159.99999999999997,
+        89.99999999999999,
+        -89.99999999999999
+      ]
+    },
+    {
+      "name": "V4-Drive-Hub-L",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -173.0,
+        27.0,
+        -153.0,
+        -145.0,
+        153.0,
+        -27.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -159.0,
+        90.0,
+        -90.0
+      ]
+    },
+    {
+      "name": "V4-Drive-Axle-L",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -145.0,
+        81.0,
+        -99.0,
+        -112.0,
+        99.0,
+        -81.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -128.49999999999997,
+        89.99999999999999,
+        -89.99999999999999
+      ]
+    },
+    {
+      "name": "V4-Gearmotor-Envelope-L",
+      "color": "#293540",
+      "bounds_mm": [
+        -112.0,
+        76.5,
+        -103.5,
+        -62.0,
+        103.5,
+        -76.5
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -87.00000000000001,
+        90.0,
+        -90.0
+      ]
+    },
+    {
+      "name": "V4-Gearmotor-Cradle-Envelope-L",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -100.0,
+        84.0,
+        -109.0,
+        -78.0,
+        104.0,
+        -71.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -89.00000000000001,
+        95.8661468710435,
+        -90.0
+      ]
+    },
+    {
+      "name": "V4-Caster-Wheel-L",
+      "color": "#243039",
+      "bounds_mm": [
+        -99.0,
+        0.0,
+        96.0,
+        -73.0,
+        84.0,
+        180.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -86.00000000000001,
+        42.0,
+        138.00000000000003
+      ]
+    },
+    {
+      "name": "V4-Caster-Fork-L",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -106.0,
+        39.0,
+        125.0,
+        -66.0,
+        95.0,
+        165.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -86.0,
+        75.78947368421053,
+        140.94736842105266
+      ]
+    },
+    {
+      "name": "V4-Caster-Pivot-L",
+      "color": "#293540",
+      "bounds_mm": [
+        -100.0,
+        95.0,
+        140.0,
+        -72.0,
+        104.0,
+        168.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -86.00000000000001,
+        99.5,
+        154.0
+      ]
+    },
+    {
+      "name": "V4-Rubber-Drive-Tire-R",
+      "color": "#243039",
+      "bounds_mm": [
+        145.0,
+        0.0,
+        -180.0,
+        175.0,
+        180.0,
+        0.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        159.99999999999994,
+        90.00000000000001,
+        -89.99999999999999
+      ]
+    },
+    {
+      "name": "V4-Drive-Hub-R",
+      "color": "#839BAA",
+      "bounds_mm": [
+        145.0,
+        27.0,
+        -153.0,
+        173.0,
+        153.0,
+        -27.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        159.0,
+        90.0,
+        -90.00000000000003
+      ]
+    },
+    {
+      "name": "V4-Drive-Axle-R",
+      "color": "#839BAA",
+      "bounds_mm": [
+        112.0,
+        81.0,
+        -99.0,
+        145.0,
+        99.0,
+        -81.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        128.49999999999997,
+        89.99999999999999,
+        -89.99999999999999
+      ]
+    },
+    {
+      "name": "V4-Gearmotor-Envelope-R",
+      "color": "#293540",
+      "bounds_mm": [
+        62.0,
+        76.5,
+        -103.5,
+        112.0,
+        103.5,
+        -76.5
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        87.00000000000001,
+        90.0,
+        -90.0
+      ]
+    },
+    {
+      "name": "V4-Gearmotor-Cradle-Envelope-R",
+      "color": "#839BAA",
+      "bounds_mm": [
+        78.0,
+        84.0,
+        -109.0,
+        100.0,
+        104.0,
+        -71.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        89.0,
+        95.8661468710435,
+        -90.00000000000001
+      ]
+    },
+    {
+      "name": "V4-Caster-Wheel-R",
+      "color": "#243039",
+      "bounds_mm": [
+        73.0,
+        0.0,
+        96.0,
+        99.0,
+        84.0,
+        180.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        86.00000000000001,
+        42.0,
+        138.00000000000003
+      ]
+    },
+    {
+      "name": "V4-Caster-Fork-R",
+      "color": "#839BAA",
+      "bounds_mm": [
+        66.0,
+        39.0,
+        125.0,
+        106.0,
+        95.0,
+        165.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        86.0,
+        75.78947368421053,
+        140.94736842105266
+      ]
+    },
+    {
+      "name": "V4-Caster-Pivot-R",
+      "color": "#293540",
+      "bounds_mm": [
+        72.0,
+        95.0,
+        140.0,
+        100.0,
+        104.0,
+        168.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        86.00000000000001,
+        99.5,
+        154.0
+      ]
+    },
+    {
+      "name": "V4-Mast-Base-Load-Path",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -26.0,
+        110.0,
+        106.0,
+        26.0,
+        248.0,
+        158.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        6.243851393303977e-16,
+        179.0,
+        131.99999999999997
+      ]
+    },
+    {
+      "name": "V4-Front-Mast",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -15.0,
+        248.0,
+        117.0,
+        15.0,
+        620.1,
+        147.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        3.6403791125499697e-16,
+        434.05,
+        132.0
+      ]
+    },
+    {
+      "name": "V4-Stereo-Carrier",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -31.0,
+        590.0,
+        142.0,
+        31.0,
+        610.0,
+        155.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -1.9973449471139825e-15,
+        599.9999999999999,
+        148.97492995405867
+      ]
+    },
+    {
+      "name": "V4-Stereo-60mm-Housing-Envelope",
+      "color": "#293540",
+      "bounds_mm": [
+        -51.0,
+        585.0,
+        155.0,
+        51.0,
+        615.0,
+        180.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        2.445451248907678e-16,
+        600.0,
+        167.5
+      ]
+    },
+    {
+      "name": "V4-D6-Top-Carrier",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -29.0,
+        620.1,
+        107.0,
+        29.0,
+        628.1,
+        157.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        3.641531520770515e-16,
+        624.1000000000001,
+        132.00000000000003
+      ]
+    },
+    {
+      "name": "V4-COIN-D6-Base",
+      "color": "#293540",
+      "bounds_mm": [
+        -26.35,
+        628.1,
+        109.4,
+        26.35,
+        646.1,
+        154.6
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        7.375286877450887e-16,
+        637.1,
+        132.0
+      ]
+    },
+    {
+      "name": "V4-COIN-D6-Optical-Head",
+      "color": "#243039",
+      "bounds_mm": [
+        -20.7,
+        646.1,
+        111.3,
+        20.7,
+        662.5,
+        152.7
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -3.043944398000271e-16,
+        654.3000000000001,
+        132.0
+      ]
+    },
+    {
+      "name": "V4-Stereo-Lens-L",
+      "color": "#246C97",
+      "bounds_mm": [
+        -39.0,
+        591.0,
+        180.0,
+        -21.0,
+        609.0,
+        182.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -29.999999999999996,
+        600.0,
+        180.99999999999997
+      ]
+    },
+    {
+      "name": "V4-Stereo-Lens-R",
+      "color": "#246C97",
+      "bounds_mm": [
+        21.0,
+        591.0,
+        180.0,
+        39.0,
+        609.0,
+        182.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        30.0,
+        600.0,
+        180.99999999999997
+      ]
+    },
+    {
+      "name": "V4-Handle-Control-Bridge",
+      "color": "#293540",
+      "bounds_mm": [
+        -70.0,
+        935.0,
+        -407.0,
+        70.0,
+        965.0,
+        -360.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -1.7184047722992493e-15,
+        950.0,
+        -383.5
+      ]
+    },
+    {
+      "name": "V4-Manual-Confirm",
+      "color": "#246C97",
+      "bounds_mm": [
+        -9.0,
+        965.0,
+        -393.0,
+        9.0,
+        969.0,
+        -375.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -2.3885829116588013e-16,
+        967.0,
+        -383.99999999999994
+      ]
+    },
+    {
+      "name": "V4-Physical-EStop",
+      "color": "#C13244",
+      "bounds_mm": [
+        30.0,
+        965.0,
+        -397.0,
+        56.0,
+        979.0,
+        -371.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        43.00000000000001,
+        971.9999999999999,
+        -384.0
+      ]
+    },
+    {
+      "name": "V4-Handle-Base-L",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -108.0,
+        110.0,
+        -166.0,
+        -76.0,
+        242.0,
+        -134.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -92.00000000000001,
+        176.00000000000003,
+        -150.0
+      ]
+    },
+    {
+      "name": "V4-Handle-Upright-L",
+      "color": "#839BAA",
+      "bounds_mm": [
+        -105.0,
+        242.0,
+        -397.721104,
+        -79.0,
+        935.0,
+        -136.278896
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -92.00000020286468,
+        587.1476011567477,
+        -266.5414487582737
+      ]
+    },
+    {
+      "name": "V4-Handle-Vibration-Grip-L",
+      "color": "#243039",
+      "bounds_mm": [
+        -146.0,
+        931.0,
+        -403.0,
+        -70.0,
+        969.0,
+        -365.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        -108.0,
+        950.0,
+        -383.99999999999994
+      ]
+    },
+    {
+      "name": "V4-Handle-Base-R",
+      "color": "#839BAA",
+      "bounds_mm": [
+        76.0,
+        110.0,
+        -166.0,
+        108.0,
+        242.0,
+        -134.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        92.00000000000001,
+        176.00000000000003,
+        -150.0
+      ]
+    },
+    {
+      "name": "V4-Handle-Upright-R",
+      "color": "#839BAA",
+      "bounds_mm": [
+        79.0,
+        242.0,
+        -397.721104,
+        105.0,
+        935.0,
+        -136.278896
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        91.99999992882375,
+        587.1475512913968,
+        -266.5414321184049
+      ]
+    },
+    {
+      "name": "V4-Handle-Vibration-Grip-R",
+      "color": "#243039",
+      "bounds_mm": [
+        70.0,
+        931.0,
+        -403.0,
+        146.0,
+        969.0,
+        -365.0
+      ],
+      "nominal_mass_g": null,
+      "mass_basis": null,
+      "centroid_mm": [
+        108.0,
+        950.0,
+        -384.00000000000006
+      ]
+    }
+  ],
+  "overall_bounds_mm": [
+    -175.0,
+    0.0,
+    -407.0,
+    175.0,
+    979.0,
+    225.0
+  ],
+  "chassis_length_width_mm": [
+    450,
+    350
+  ],
+  "drive_track_mm": 320,
+  "drive_tire_diameter_mm": 180,
+  "caster_diameter_mm": 84,
+  "caster_pivot_to_drive_axle_mm": 244.0,
+  "camera_center_height_mm": 600.0,
+  "stereo_baseline_mm": 60,
+  "lidar_scan_height_mm": 655.0,
+  "rear_scan_shadow_sectors_deg": {
+    "V4-Handle-Upright-L": [
+      -170,
+      -165
+    ],
+    "V4-Handle-Upright-R": [
+      165,
+      170
+    ]
+  },
+  "grip_center_height_mm": 950.0,
+  "step_reloaded_valid": true,
+  "step_reloaded_components": 41,
+  "static_intersections": [],
+  "caster_sweep_intersections": []
+}
