@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>随行 · 仿真与源码</title>
+<style>
+:root{color-scheme:light;--page:#eef1f7;--card:#fff;--ink:#172a41;--muted:#546783;--blue:#174ea6;--edge:#d9e0eb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.55 system-ui,"Noto Sans CJK SC","Microsoft YaHei",sans-serif}
+header{background:#142a44;color:white;padding:32px max(calc((100vw - 1140px)/2),24px) 24px}
+h1,h2,h3,p{margin:0}
+h1{font-size:clamp(24px,4vw,36px);line-height:1.2}
+header p{color:#d0dded;margin-top:9px;font-size:14px}
+nav{display:flex;gap:8px;margin-top:24px}
+button,select{font:inherit}
+button{cursor:pointer;padding:7px 13px;border:1px solid var(--edge);background:white;color:var(--ink);border-radius:7px;white-space:nowrap}
+button[aria-pressed="true"],.primary{background:var(--blue);color:white;border-color:var(--blue)}
+nav button{background:#25435f;color:#f1f6ff;border-color:#42617c}
+nav button[aria-pressed="true"]{background:white;color:#172a41}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #75a7fb;outline-offset:2px}
+main{max-width:1188px;margin:24px auto;padding:0 24px 28px}
+section{background:white;border:1px solid var(--edge);border-radius:12px;overflow:hidden}
+.section-head{padding:18px 22px;border-bottom:1px solid var(--edge)}
+.section-head p{color:var(--muted);margin-top:2px}
+.workspace{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(240px,1fr);gap:18px}
+.panel{padding:18px;min-width:0}
+#scenario-controls,.controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#scenario-controls{margin-bottom:13px}
+canvas{background:#fbfdff;border:1px solid var(--edge);border-radius:8px;width:100%;height:350px;display:block}
+.controls{margin-top:12px}
+input[type=range]{flex:1;min-width:80px;accent-color:var(--blue)}
+#time{font-variant-numeric:tabular-nums;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:#394f6b;margin-top:11px}
+.key::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--key)}
+.blue{--key:#1461be}.red{--key:#b94338}.green{--key:#27815c}
+.metrics{margin:14px 0 18px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.metric{background:#f3f6fb;border:1px solid #e4ebf5;border-radius:8px;padding:10px}
+.metric small{color:var(--muted);display:block;line-height:1.35}
+.metric strong{font-size:17px;font-variant-numeric:tabular-nums}
+.risk{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.risk span{border-radius:5px;padding:3px 7px;background:#e8eef5;font-weight:600}
+.risk [data-state="CLEAR"]{background:#dff4e9;color:#186748}
+.risk [data-state="DANGER"]{background:#fce8e7;color:#923733}
+.risk [data-state="CAUTION"]{background:#fff1cc;color:#755410}
+.fine{color:var(--muted);font-size:13px}
+.note{border-top:1px solid var(--edge);padding:10px 18px;overflow-wrap:anywhere}
+.vision img{display:block;max-width:100%;max-height:660px;margin:auto;border-radius:7px}
+.data-list{list-style:none;padding:0;margin:12px 0}
+.data-list li{display:flex;justify-content:space-between;border-top:1px solid var(--edge);padding:7px 0;gap:10px}
+.source-wrap{display:grid;grid-template-columns:minmax(185px,260px) minmax(0,1fr);min-height:520px}
+.source-list{padding:12px;max-height:72vh;overflow:auto;background:#f8fafc;border-right:1px solid var(--edge)}
+.source-list button{width:100%;white-space:normal;display:block;text-align:left;margin-bottom:7px;padding:6px 8px}
+.source-list button small{display:block;opacity:.87}
+.source-pane{min-width:0;background:#111d31;color:#e9f0fa;display:flex;flex-direction:column}
+.source-title{color:#d0dded;background:#203651;padding:8px 16px;word-break:break-all}
+.code-scroll{margin:0;padding:12px 0;overflow:auto;max-height:65vh;background:#111d31;font:13px/1.55 ui-monospace,Consolas,"Liberation Mono",monospace;tab-size:4}
+.code-scroll ol{margin:0;padding:0 16px 0 55px}
+.code-scroll li{padding-left:8px;min-height:1.55em;white-space:pre}
+.code-scroll li::marker{color:#9cb0cb}
+.code-scroll li:hover{background:#203651}
+@media(max-width:845px){.workspace{grid-template-columns:1fr}.source-wrap{grid-template-columns:1fr}.source-list{max-height:170px;border:0;border-bottom:1px solid var(--edge)}}
+@media(max-width:515px){main{padding:0 10px}.panel,.section-head{padding:12px}canvas{height:265px}}
+</style>
+<header>
+  <h1>随行 · 仿真与源码</h1>
+  <p id="project"></p>
+  <nav aria-label="视图">
+    <button data-tab="simulation" aria-pressed="true">避障回放</button>
+    <button data-tab="vision" aria-pressed="false">识别结果</button>
+    <button data-tab="source" aria-pressed="false">查看源码</button>
+  </nav>
+</header>
+<main>
+  <section id="simulation">
+    <div class="section-head"><h2>闭环避障仿真</h2><p>拖动时间轴，查看每一步的车身、轨迹和方向判断。</p></div>
+    <div class="workspace" id="simulation-data">
+      <div class="panel">
+        <div id="scenario-controls" aria-label="仿真场景"></div>
+        <canvas id="map" role="img" aria-label="车身、轨迹、障碍物和目标区域的俯视图"></canvas>
+        <div class="controls">
+          <button class="primary" id="play">播放</button><button id="reset">回到起点</button>
+          <input id="timeline" type="range" value="0" min="0" max="0" aria-label="仿真时间轴">
+          <span id="time"></span>
+        </div>
+        <div class="legend"><span class="key blue">车身与轨迹</span><span class="key red">障碍物</span><span class="key green">目标区</span></div>
+      </div>
+      <div class="panel">
+        <h3 id="scenario-title"></h3>
+        <div id="metrics" class="metrics"></div>
+        <h3>当前方向风险</h3>
+        <div id="risk" class="risk"></div>
+        <p id="frame-note" class="fine" style="margin-top:10px"></p>
+      </div>
+    </div>
+    <p id="no-simulation" class="panel" hidden>当前结果目录未生成避障轨迹。运行仿真后可重新生成此页。</p>
+    <p class="fine note" id="reports"></p>
+  </section>
+  <section id="vision" hidden>
+    <div class="section-head"><h2>YOLOv8 样例检测</h2><p>使用公开照片测出的检测框与置信度。</p></div>
+    <div class="workspace vision">
+      <div class="panel"><img id="detection-image" alt="YOLOv8 识别标注结果" hidden><p id="no-image">当前结果目录未生成识别标注图。</p></div>
+      <div class="panel"><h3>检测结果</h3><ul class="data-list" id="detections"></ul></div>
+    </div>
+  </section>
+  <section id="source" hidden>
+    <div class="section-head"><h2>查看项目源码</h2><p>选择文件查看只读快照。修改时使用虚拟机里的项目编辑器。</p></div>
+    <div class="source-wrap">
+      <div class="source-list" id="files" aria-label="项目源码文件"></div>
+      <div class="source-pane"><div class="source-title" id="filename"></div><div class="code-scroll" tabindex="0" aria-label="代码内容"><ol id="code"></ol></div></div>
+    </div>
+  </section>
+</main>
+<script type="application/json" id="payload"><!-- SUX_DATA --></script>
+<script>
+"use strict";
+const data = JSON.parse(document.getElementById("payload").textContent);
+const get = id => document.getElementById(id);
+const scenarios = data.scenarios.filter(scene => Array.isArray(scene.trace) && scene.trace.length);
+const scenarioNames = {bypass:"绕过静态障碍", blocked:"通道堵塞", dropout:"传感器断流"};
+const directions = {left:"左转", straight:"直行", right:"右转", stop:"停车"};
+const levels = {CLEAR:"可通行", CAUTION:"谨慎", DANGER:"危险", UNKNOWN:"未知"};
+const canvas = get("map"), ctx = canvas.getContext("2d"), slider = get("timeline");
+let sceneIndex = 0, frameIndex = 0, timer;
+get("project").textContent = data.project;
+get("reports").textContent = "仿真结果目录 " + data.reports;
+
+function stop() {
+  if (timer) clearInterval(timer);
+  timer = undefined;
+  get("play").textContent = "播放";
+}
+function switchTab(tab) {
+  for (const id of ["simulation", "vision", "source"]) get(id).hidden = id !== tab;
+  for (const button of document.querySelectorAll("nav button")) button.setAttribute("aria-pressed", button.dataset.tab === tab);
+  if (tab !== "simulation") stop();
+  if (tab === "simulation") draw();
+}
+document.querySelectorAll("nav button").forEach(button => button.addEventListener("click", () => switchTab(button.dataset.tab)));
+
+const fixed = (value, digits=2) => Number.isFinite(value) ? value.toFixed(digits) : "—";
+function draw() {
+  if (!scenarios.length || get("simulation").hidden || !ctx) return;
+  const scene = scenarios[sceneIndex], rows = scene.trace, row = rows[frameIndex], b = scene.room_bounds_m;
+  const w = canvas.clientWidth, h = canvas.clientHeight, dpr = devicePixelRatio || 1;
+  if (!w || !h) return;
+  canvas.width = Math.round(w*dpr);
+  canvas.height = Math.round(h*dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const scale = Math.min((w-36)/(b.x_max-b.x_min), (h-48)/(b.y_max-b.y_min));
+  const ox = (w-(b.x_max-b.x_min)*scale)/2-b.x_min*scale;
+  const oy = (h-(b.y_max-b.y_min)*scale)/2+b.y_max*scale-7;
+  const px = x => ox+x*scale, py = y => oy-y*scale;
+  const roomWidth = (b.x_max-b.x_min)*scale, roomHeight = (b.y_max-b.y_min)*scale;
+  ctx.fillStyle = "#fff"; ctx.fillRect(px(b.x_min),py(b.y_max),roomWidth,roomHeight);
+  ctx.strokeStyle = "#dce6ef"; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for(let x=Math.ceil(b.x_min);x<=b.x_max;x++){ctx.moveTo(px(x),py(b.y_min));ctx.lineTo(px(x),py(b.y_max));}
+  for(let y=Math.ceil(b.y_min);y<=b.y_max;y++){ctx.moveTo(px(b.x_min),py(y));ctx.lineTo(px(b.x_max),py(y));}
+  ctx.stroke();
+  ctx.strokeStyle = "#7c91a9"; ctx.strokeRect(px(b.x_min),py(b.y_max),roomWidth,roomHeight);
+  ctx.fillStyle = "#546783"; ctx.font = "12px system-ui"; ctx.textAlign = "center";
+  for(let x=Math.ceil(b.x_min);x<=b.x_max;x++) ctx.fillText(x,px(x),py(b.y_min)+16);
+  ctx.fillText("前向距离 (m)",w/2,h-7);
+  function disk(x,y,r,fill,stroke) {
+    ctx.beginPath(); ctx.arc(px(x),py(y),Math.max(r*scale,2),0,Math.PI*2);
+    ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();
+  }
+  function path(first,last,color,width) {
+    ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();
+    ctx.moveTo(px(rows[first].x_m),py(rows[first].y_m));
+    for(let i=first+1;i<=last;i++) ctx.lineTo(px(rows[i].x_m),py(rows[i].y_m));
+    ctx.stroke();
+  }
+  disk(scene.goal_m.x,scene.goal_m.y,0.18,"#daf1e6","#27815c");
+  scene.obstacles.forEach(o=>disk(o.x_m,o.y_m,o.radius_m,"#f9c9c4","#b94338"));
+  path(0,rows.length-1,"#c2d7f1",2);
+  path(0,frameIndex,"#1461be",3.6);
+  const f=scene.footprint_m;
+  ctx.save();
+  ctx.translate(px(row.x_m),py(row.y_m));ctx.rotate(-row.yaw_rad);
+  ctx.fillStyle="#bfdbfa";ctx.strokeStyle="#1051a4";ctx.lineWidth=2;
+  ctx.fillRect(-f.back*scale,-f.half_width*scale,(f.back+f.front)*scale,f.half_width*2*scale);
+  ctx.strokeRect(-f.back*scale,-f.half_width*scale,(f.back+f.front)*scale,f.half_width*2*scale);
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(f.front*scale,0);ctx.stroke();
+  ctx.restore();
+  get("time").textContent=fixed(row.time_s,1)+" / "+fixed(rows.at(-1).time_s,1)+" s";
+  slider.value=frameIndex;
+  get("risk").replaceChildren(...["left","straight","right"].map(key=>{
+    const item=document.createElement("span"), state=row.risk[key];
+    item.dataset.state=state;item.textContent=directions[key]+" "+(levels[state]||state);return item;
+  }));
+  get("frame-note").textContent="剩余有效期 "+(row.valid_for_ms??"无")+(row.valid_for_ms!==null?" ms":"")+(row.sensor_dropout?" · 传感器断流":"");
+  get("action").textContent=directions[row.direction]||row.direction;
+}
+function selectScenario(index) {
+  stop();sceneIndex=index;frameIndex=0;
+  const scene=scenarios[index];
+  get("scenario-title").textContent=scenarioNames[scene.scenario]||scene.scenario;
+  get("scenario-controls").querySelectorAll("button").forEach((button,i)=>button.setAttribute("aria-pressed", i===index));
+  slider.max=scene.trace.length-1;
+  get("metrics").replaceChildren(...[
+    ["当前动作","—","action"],["仿真结果",scene.goal_reached?"抵达目标":"停止或未抵达"],
+    ["最小车身净距",fixed(scene.min_clearance_m,3)+" m"],["终点前向位置",fixed(scene.final_pose.x_m,3)+" m"]
+  ].map(([label,value,id])=>{
+    const out=document.createElement("div"), title=document.createElement("small"), number=document.createElement("strong");
+    out.className="metric";title.textContent=label;number.textContent=value;if(id)number.id=id;
+    out.append(title,number);return out;
+  }));
+  draw();
+}
+if(scenarios.length){
+  scenarios.forEach((scene,index)=>{
+    const button=document.createElement("button");button.textContent=scenarioNames[scene.scenario]||scene.scenario;
+    button.addEventListener("click",()=>selectScenario(index));get("scenario-controls").append(button);
+  });
+  get("play").addEventListener("click",()=>{
+    if(timer){stop();return;}
+    const last=scenarios[sceneIndex].trace.length-1;
+    if(last===0)return;
+    if(frameIndex>=last)frameIndex=0;
+    draw();get("play").textContent="暂停";
+    timer=setInterval(()=>{frameIndex++;draw();if(frameIndex>=last)stop();},100);
+  });
+  get("reset").addEventListener("click",()=>{stop();frameIndex=0;draw();});
+  slider.addEventListener("input",()=>{stop();frameIndex=Number(slider.value);draw();});
+  new ResizeObserver(draw).observe(canvas);
+  selectScenario(0);
+}else{
+  get("simulation-data").hidden=true;get("simulation-data").style.display="none";get("no-simulation").hidden=false;
+}
+if(data.image){
+  get("detection-image").src=data.image;get("detection-image").hidden=false;get("no-image").hidden=true;
+}
+const targetNames={person:"行人",bus:"公交车",bicycle:"自行车",car:"汽车"};
+for(const detection of data.detections){
+  const li=document.createElement("li"), label=document.createElement("span"), confidence=document.createElement("strong");
+  label.textContent=targetNames[detection.label]||detection.label;
+  confidence.textContent=fixed(detection.confidence*100,1)+"%";
+  li.append(label,confidence);get("detections").append(li);
+}
+function showFile(index) {
+  const file=data.files[index];
+  get("filename").textContent=file.path;
+  const lines=file.text.replace(/\r\n/g,"\n").replace(/\n$/,"").split("\n");
+  get("code").replaceChildren(...lines.map(line=>{const row=document.createElement("li");row.textContent=line||" ";return row;}));
+  get("files").querySelectorAll("button").forEach((button,i)=>button.setAttribute("aria-pressed",i===index));
+  get("code").parentElement.scrollTop=0;
+}
+data.files.forEach((file,index)=>{
+  const button=document.createElement("button"), desc=document.createElement("small");
+  button.textContent=file.name;desc.textContent=file.description;button.append(desc);
+  button.addEventListener("click",()=>showFile(index));get("files").append(button);
+});
+if(data.files.length)showFile(0);
+</script>
+</html>

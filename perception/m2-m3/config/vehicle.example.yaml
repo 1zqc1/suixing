@@ -1,0 +1,29 @@
+# 复制后以实测值替换。差速轮距、轮速上限及外参需要实测。
+suixing_chassis:
+  ros__parameters:
+    drive_mode: differential
+    wheel_separation_m: 0.0
+    max_wheel_speed_mps: 0.0
+    # Legacy Ackermann simulator: use drive_mode: ackermann and set
+    # wheelbase_m and max_steering_rad instead.
+    publish_wheel_odom: true
+    watchdog_ms: 100
+    feedback_gap_ms: 100
+
+suixing_sensor_sync:
+  ros__parameters:
+    raw_stereo_ns: /stereo_driver
+    d6_frame: d6_link
+    left_frame: left_camera_optical_frame
+    right_frame: right_camera_optical_frame
+    # 每组为 base_link 下的 [x, y, z, qx, qy, qz, qw]，米和单位四元数。
+    d6_extrinsic: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    left_extrinsic: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    right_extrinsic: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    max_pair_skew_ms: 5
+    max_input_age_ms: 100
+
+suixing_amcl:
+  ros__parameters:
+    transform_tolerance: 0.2
+    set_initial_pose: false

@@ -8,6 +8,7 @@
 | [开发环境与安装](docs/开发环境与安装.md) | Windows、Ubuntu、板端及各工具的版本和配置 |
 | [开发与验收基线](docs/开发与验收基线.md) | 可复现项目、已取得的证据与待验收项 |
 | [随行 Android 应用](android/suixing-app/README.md) | Android 16、百度地图、GPS 与模拟轨迹、本地回放、只读车况 |
+| [队友 A · M2/M3 感知与风险交接](perception/m2-m3/README.md) | 双目标定、YOLO、ROS 2 风险融合、CPU3 接口与复验 |
 | [M1 v0.1 合成交接包](samples/m1-handoff-v0.1/README.md) | D6、双目、TF、ROS 2 录包、风险摘要和车况接口样例 |
 | [V4 两驱概念装配](docs/rover-v1-20261116/cad-v4-two-drive/README.md) · [辅助出行回放](docs/rover-v1-20261116/assist/README.md) | 概念 STEP、几何检查、融合与运动监督桌面原型 |
 | [双赛总纲](docs/随行-双赛冲击国一总纲V1-2026-11-19.md) | 系统目标、安全边界、里程碑和比赛材料 |

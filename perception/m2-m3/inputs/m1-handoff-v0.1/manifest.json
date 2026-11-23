@@ -1,0 +1,15 @@
+{
+  "data_version": "m1-handoff-v0.1",
+  "schema_version": "0.1",
+  "data_origin": "mock",
+  "repository_base_commit": "b0d17fce44f967be418c7583fb03186d3b44c9e2",
+  "source": "working tree (see SHA256SUMS for packaged files)",
+  "bag_topic_counts": {
+    "/d6/scan": 2,
+    "/stereo/left/camera_info": 2,
+    "/stereo/left/image_raw": 2,
+    "/stereo/right/camera_info": 2,
+    "/stereo/right/image_raw": 2,
+    "/tf_static": 1
+  }
+}
