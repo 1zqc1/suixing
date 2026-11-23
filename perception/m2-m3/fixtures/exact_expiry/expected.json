@@ -1,0 +1,20 @@
+{
+  "session_id": "0123456789abcdef",
+  "seq": 2,
+  "sample_ns": null,
+  "risk": {
+    "left": "UNKNOWN",
+    "straight": "UNKNOWN",
+    "right": "UNKNOWN"
+  },
+  "ttc_s": null,
+  "unknown_region": true,
+  "source_age_ms": null,
+  "received_age_ms": null,
+  "valid_for_ms": null,
+  "suggested_speed_limit_mps": 0.0,
+  "semantic_used": false,
+  "scan_valid": false,
+  "stereo_valid": false,
+  "aligned": false
+}

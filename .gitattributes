@@ -7,3 +7,6 @@ gradlew.bat text eol=crlf
 # Preserve the exact bytes used by the M1 fixture SHA-256 manifest.
 /samples/m1-handoff-v0.1/** -text
 /docs/rover-v1-20261116/cad-v4-two-drive/*.step binary
+
+# Keep the exact bytes of the M2/M3 delivery fixtures.
+/perception/m2-m3/inputs/m1-handoff-v0.1/** -text
